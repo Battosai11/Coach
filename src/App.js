@@ -6,8 +6,7 @@ import { Activity, TrendingUp, Save, CheckCircle2, Dumbbell, ChevronRight, Chevr
 // ==========================================
 const USER_CONFIG = {
   "Battosai": { 
-    // J'ai mis une image manga stylée pour le Sensei. Tu peux remettre ton lien si tu préfères.
-    avatar: "https://i.imgur.com/XqQZ4p5.png", 
+    avatar: "https://i.imgur.com/XqQZ4p5.png", // Image stylée
     theme: "blue", 
     label: "Sensei"
   },
@@ -19,15 +18,15 @@ const USER_CONFIG = {
 };
 
 // ==========================================
-// 2. LIENS DES IMAGES (Hébergés & Stables)
+// 2. LIENS DES IMAGES
 // ==========================================
 const IMAGES = {
-  mascot: "https://i.imgur.com/h592WqJ.png", // Daxter (Détouré et propre)
+  mascot: "https://i.imgur.com/h592WqJ.png", // Daxter
   defaultGif: "https://media.giphy.com/media/26BkLZwkkRlDPMq6k/giphy.gif"
 };
 
 // ==========================================
-// 3. PROGRAMME SPORT (GIFS PRÉCIS + DESCRIPTIONS LONGUES)
+// 3. PROGRAMME SPORT (VRAIS GIFs + DESCRIPTIONS)
 // ==========================================
 const PROGRAMME_SPORT = {
   1: { 
@@ -37,37 +36,37 @@ const PROGRAMME_SPORT = {
       { 
         name: "Shoulder Press (Haltères)", 
         type: "reps", target: "4 x 10-12", volume: 48, 
-        desc: "Assieds-toi avec le dos bien droit. Pousse les haltères verticalement jusqu'à ce que les bras soient tendus sans verrouiller les coudes. Contrôle la descente jusqu'au niveau des oreilles.", 
+        desc: "Assis, dos droit. Pousse les haltères verticalement. Contrôle la descente.", 
         img: "https://media.giphy.com/media/3o7TjqCSr0f96w3K5q/giphy.gif" 
       },
       { 
         name: "Rowing un bras", 
         type: "reps", target: "4 x 12 / côté", volume: 48, 
-        desc: "Place un genou et une main sur un banc pour le support. Garde le dos plat (très important). Tire l'haltère vers ta hanche en gardant le coude près du corps.", 
+        desc: "Genou sur banc, dos plat. Tire le coude vers le haut sans tourner le buste.", 
         img: "https://media.giphy.com/media/10006Z2u7L1Wc/giphy.gif" 
       },
       { 
         name: "Curl Biceps", 
         type: "reps", target: "3 x 12", volume: 36, 
-        desc: "Debout, haltères en mains. Garde les coudes fixes contre tes côtes. Monte la charge en contractant le biceps et redescends doucement. Ne balance pas le dos !", 
+        desc: "Coudes serrés au corps. Contracte les biceps sans balancer le dos.", 
         img: "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif" 
       },
       { 
         name: "Triceps derrière la tête", 
         type: "reps", target: "3 x 12", volume: 36, 
-        desc: "Assis ou debout. Prends un haltère à deux mains. Descends-le derrière ta nuque en gardant les coudes serrés vers l'avant, puis tends les bras vers le ciel.", 
+        desc: "Haltère à deux mains derrière la nuque. Tends les bras vers le ciel.", 
         img: "https://media.giphy.com/media/xT9Igwe1F5Xg7q6sDe/giphy.gif" 
       },
       { 
         name: "Planche", 
         type: "time", target: "3 x 45-60 sec", volume: 3, 
-        desc: "En appui sur les avant-bras et les orteils. Corps aligné comme une planche. Contracte fort les abdos et les fessiers. Ne laisse pas le bas du dos se creuser.", 
+        desc: "Gainage statique. Corps aligné, abdos contractés.", 
         img: "https://media.giphy.com/media/xT8qBff8cKDDRGTWlW/giphy.gif" 
       }, 
       { 
         name: "Relevés de jambes", 
         type: "reps", target: "3 x 12-15", volume: 45, 
-        desc: "Allongé sur le dos, mains sous les fesses ou sur les côtés. Lève les jambes tendues jusqu'à la verticale, puis redescends sans toucher le sol. Ça doit brûler le bas des abdos.", 
+        desc: "Dos au sol. Lève les jambes tendues à la verticale. Contrôle la descente.", 
         img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" 
       }
     ]
@@ -79,31 +78,31 @@ const PROGRAMME_SPORT = {
       { 
         name: "Squat Haltères", 
         type: "reps", target: "4 x 12", volume: 48, 
-        desc: "Haltères sur les épaules ou le long du corps. Pieds largeur d'épaules. Descends les fesses en arrière comme pour t'asseoir, garde le dos droit, puis remonte.", 
+        desc: "Pieds largeur épaules. Descends les fesses en arrière, dos droit.", 
         img: "https://media.giphy.com/media/12h4r12uD9eKli/giphy.gif" 
       },
       { 
         name: "Fentes Haltères", 
         type: "reps", target: "3 x 12 / jambe", volume: 36, 
-        desc: "Fais un grand pas en avant. Descends le genou arrière vers le sol (sans toucher). Le genou avant ne doit pas dépasser la pointe du pied. Pousse pour revenir.", 
+        desc: "Grand pas en avant. Genou arrière frôle le sol. Pousse pour revenir.", 
         img: "https://media.giphy.com/media/3o7qDQ4kcSD1PLM3BK/giphy.gif" 
       },
       { 
         name: "Soulevé de terre (Jambes tendues)", 
         type: "reps", target: "3 x 12", volume: 36, 
-        desc: "Jambes presque tendues (léger flex). Penche le buste en avant en poussant les fesses loin derrière. Sens l'étirement derrière les cuisses, puis remonte en contractant les fessiers.", 
+        desc: "Penche le buste en avant, fesses en arrière. Sens l'étirement des ischios.", 
         img: "https://media.giphy.com/media/p8wLy6i3OEI1i/giphy.gif" 
       },
       { 
         name: "Hip Thrust Haltères", 
         type: "reps", target: "3 x 15", volume: 45, 
-        desc: "Haut du dos sur un banc. Haltère posé sur le bassin. Descends les fesses puis monte le bassin vers le plafond en contractant fort les fessiers en haut.", 
+        desc: "Dos sur banc, poids sur le bassin. Monte les fesses vers le plafond.", 
         img: "https://media.giphy.com/media/l41Yy4J96X8ehz8xG/giphy.gif" 
       },
       { 
         name: "Planche Latérale", 
         type: "time", target: "2 x 30-40 sec / côté", volume: 2, 
-        desc: "Sur le côté, en appui sur un coude. Lève le bassin pour aligner têtes, fesses et pieds. Tiens la position. Change de côté.", 
+        desc: "Sur le côté, bassin haut et aligné.", 
         img: "https://media.giphy.com/media/xT8qBff8cKDDRGTWlW/giphy.gif" 
       }
     ]
@@ -112,53 +111,53 @@ const PROGRAMME_SPORT = {
     title: "HIIT + Corde",
     subtitle: "Cardio Intensif",
     exercises: [
-      { name: "Corde à sauter", type: "cardio", target: "15-20 min", volume: 20, desc: "Sauts réguliers sur la pointe des pieds. Garde le rythme.", img: "https://media.giphy.com/media/l0HlPtbGpcnqa0fja/giphy.gif" },
-      { name: "Circuit : Burpees", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "La totale : Squat, planche, pompe (optionnelle), ramène les pieds, et saut vertical !", img: "https://media.giphy.com/media/26BkNHX097r61A1uE/giphy.gif" },
-      { name: "Circuit : Mountain Climbers", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Position planche bras tendus. Ramène les genoux vers la poitrine alternativement et rapidement, comme si tu courais au sol.", img: "https://media.giphy.com/media/26BkN7ZJggJ8YQ9uE/giphy.gif" },
-      { name: "Circuit : Squat Jumps", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Fais un squat classique, mais explose à la remontée pour faire un saut. Amortis bien la réception.", img: "https://media.giphy.com/media/12h4r12uD9eKli/giphy.gif" },
-      { name: "Circuit : Sprint sur place", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Sur place, monte les genoux le plus haut possible et le plus vite possible. Utilise tes bras !", img: "https://media.giphy.com/media/3o7qDEq2lvneUAtWc8/giphy.gif" }
+      { name: "Corde à sauter", type: "cardio", target: "15-20 min", volume: 20, desc: "Sauts réguliers sur la pointe des pieds.", img: "https://media.giphy.com/media/l0HlPtbGpcnqa0fja/giphy.gif" },
+      { name: "Circuit : Burpees", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat, planche, pompe, saut. Explosif !", img: "https://media.giphy.com/media/26BkNHX097r61A1uE/giphy.gif" },
+      { name: "Circuit : Mountain Climbers", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Position pompe, cours sur place.", img: "https://media.giphy.com/media/26BkN7ZJggJ8YQ9uE/giphy.gif" },
+      { name: "Circuit : Squat Jumps", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat + saut à la remontée.", img: "https://media.giphy.com/media/12h4r12uD9eKli/giphy.gif" },
+      { name: "Circuit : Sprint sur place", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Genoux hauts, à fond !", img: "https://media.giphy.com/media/3o7qDEq2lvneUAtWc8/giphy.gif" }
     ]
   },
   4: { 
     title: "Full Body Haltères",
     subtitle: "Mobilité & Renfo",
     exercises: [
-      { name: "Rowing Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Buste penché, dos plat. Tire les deux haltères en même temps vers les hanches.", img: "https://media.giphy.com/media/10006Z2u7L1Wc/giphy.gif" },
-      { name: "Squat Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Flexion des jambes avec charge. Garde le poids dans les talons.", img: "https://media.giphy.com/media/12h4r12uD9eKli/giphy.gif" },
-      { name: "Développé Épaules", type: "reps", target: "3 x 10", volume: 30, desc: "Presse militaire assis ou debout. Attention à ne pas cambrer le dos.", img: "https://media.giphy.com/media/3o7TjqCSr0f96w3K5q/giphy.gif" },
-      { name: "Curl Biceps", type: "reps", target: "2 x 12", volume: 24, desc: "Isolation des biceps. Mouvement contrôlé.", img: "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif" },
-      { name: "Triceps", type: "reps", target: "2 x 12", volume: 24, desc: "Extension verticale ou Kickback selon ta préférence.", img: "https://media.giphy.com/media/xT9Igwe1F5Xg7q6sDe/giphy.gif" },
-      { name: "Étirements + Mobilité", type: "cardio", target: "10 min", volume: 10, desc: "Retour au calme. Étire les muscles travaillés.", img: IMAGES.defaultGif }
+      { name: "Rowing Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Buste penché, tire les deux haltères ensemble.", img: "https://media.giphy.com/media/10006Z2u7L1Wc/giphy.gif" },
+      { name: "Squat Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Contrôle bien la descente.", img: "https://media.giphy.com/media/12h4r12uD9eKli/giphy.gif" },
+      { name: "Développé Épaules", type: "reps", target: "3 x 10", volume: 30, desc: "Pousse vers le ciel sans cambrer.", img: "https://media.giphy.com/media/3o7TjqCSr0f96w3K5q/giphy.gif" },
+      { name: "Curl Biceps", type: "reps", target: "2 x 12", volume: 24, desc: "Mouvement propre.", img: "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif" },
+      { name: "Triceps", type: "reps", target: "2 x 12", volume: 24, desc: "Extension au dessus de la tête.", img: "https://media.giphy.com/media/xT9Igwe1F5Xg7q6sDe/giphy.gif" },
+      { name: "Étirements + Mobilité", type: "cardio", target: "10 min", volume: 10, desc: "Récupération active.", img: IMAGES.defaultGif }
     ]
   },
   5: { 
     title: "Abdos + Core + Cardio",
     subtitle: "Sangle abdominale",
     exercises: [
-      { name: "Relevés de jambes", type: "reps", target: "4 x 12-15", volume: 60, desc: "Focus bas des abdos. Garde les lombaires collées au sol.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" },
-      { name: "Crunch inversé", type: "reps", target: "3 x 15", volume: 45, desc: "Ramène les genoux vers la poitrine et décolle légèrement le bassin du sol.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" },
-      { name: "Russian Twist (avec haltère)", type: "reps", target: "3 x 20", volume: 60, desc: "Assis, buste penché en arrière, pieds décollés. Tourne les épaules de gauche à droite.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" },
-      { name: "Planche", type: "time", target: "3 x 1 min", volume: 3, desc: "Gainage face sol. Reste solide comme un roc.", img: "https://media.giphy.com/media/xT8qBff8cKDDRGTWlW/giphy.gif" },
-      { name: "Mountain Climbers", type: "time", target: "2 x 40 sec", volume: 2, desc: "Accélère le rythme cardiaque. Genoux poitrine.", img: "https://media.giphy.com/media/26BkN7ZJggJ8YQ9uE/giphy.gif" },
-      { name: "Cardio Finition", type: "cardio", target: "15-20 min", volume: 20, desc: "Marche rapide inclinée ou vélo pour finir.", img: "https://media.giphy.com/media/l0HlPtbGpcnqa0fja/giphy.gif" }
+      { name: "Relevés de jambes", type: "reps", target: "4 x 12-15", volume: 60, desc: "Contrôle la descente.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" },
+      { name: "Crunch inversé", type: "reps", target: "3 x 15", volume: 45, desc: "Décolle le bassin.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" },
+      { name: "Russian Twist", type: "reps", target: "3 x 20", volume: 60, desc: "Rotation du buste.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" },
+      { name: "Planche", type: "time", target: "3 x 1 min", volume: 3, desc: "Reste solide.", img: "https://media.giphy.com/media/xT8qBff8cKDDRGTWlW/giphy.gif" },
+      { name: "Mountain Climbers", type: "time", target: "2 x 40 sec", volume: 2, desc: "Rythme rapide.", img: "https://media.giphy.com/media/26BkN7ZJggJ8YQ9uE/giphy.gif" },
+      { name: "Cardio Finition", type: "cardio", target: "15-20 min", volume: 20, desc: "Vélo ou marche rapide.", img: "https://media.giphy.com/media/l0HlPtbGpcnqa0fja/giphy.gif" }
     ]
   },
   6: { 
     title: "Gros Cardio",
     subtitle: "Brûle-graisse",
     exercises: [
-      { name: "Vélo ou Corde/Vélo", type: "cardio", target: "40-60 min", volume: 60, desc: "Zone d'endurance fondamentale. Tu dois pouvoir parler mais transpirer.", img: "https://media.giphy.com/media/l0HlPtbGpcnqa0fja/giphy.gif" }
+      { name: "Vélo ou Corde/Vélo", type: "cardio", target: "40-60 min", volume: 60, desc: "Zone d'endurance fondamentale.", img: "https://media.giphy.com/media/l0HlPtbGpcnqa0fja/giphy.gif" }
     ]
   },
   0: { 
     title: "HIIT Léger + Rappel",
     subtitle: "Finition Semaine",
     exercises: [
-      { name: "HIIT", type: "time", target: "10-15 min", volume: 15, desc: "Tabata ou petit circuit rapide pour réveiller le corps.", img: "https://media.giphy.com/media/26BkNHX097r61A1uE/giphy.gif" },
-      { name: "Rowing", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel dos léger.", img: "https://media.giphy.com/media/10006Z2u7L1Wc/giphy.gif" },
-      { name: "Curl", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel biceps pour le pump.", img: "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif" },
-      { name: "Épaules", type: "reps", target: "2 x 10", volume: 20, desc: "Rappel épaules léger.", img: "https://media.giphy.com/media/3o7TjqCSr0f96w3K5q/giphy.gif" },
-      { name: "Abdos", type: "time", target: "5 min", volume: 5, desc: "Quelques crunchs pour finir.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" }
+      { name: "HIIT", type: "time", target: "10-15 min", volume: 15, desc: "Court mais intense.", img: "https://media.giphy.com/media/26BkNHX097r61A1uE/giphy.gif" },
+      { name: "Rowing", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel dos.", img: "https://media.giphy.com/media/10006Z2u7L1Wc/giphy.gif" },
+      { name: "Curl", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel biceps.", img: "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif" },
+      { name: "Épaules", type: "reps", target: "2 x 10", volume: 20, desc: "Rappel épaules.", img: "https://media.giphy.com/media/3o7TjqCSr0f96w3K5q/giphy.gif" },
+      { name: "Abdos", type: "time", target: "5 min", volume: 5, desc: "Libre.", img: "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif" }
     ]
   }
 };
@@ -501,7 +500,14 @@ const App = () => {
     } else {
       setHistory([]); 
     }
-    triggerMascotQuote();
+    const quotes = [
+        "Alors Battosai, on s'y met ?",
+        "Prêt à transpirer Sensei ?",
+        "Pas de pitié aujourd'hui !"
+    ];
+    setMascotQuote(quotes[Math.floor(Math.random() * quotes.length)]);
+    setShowMascotQuote(true);
+    setTimeout(() => setShowMascotQuote(false), 5000);
   }, [user]);
 
   // 2. Gestion du brouillon
