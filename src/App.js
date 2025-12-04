@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { Calendar, Activity, TrendingUp, Save, CheckCircle2, Dumbbell, Clock, ChevronRight, ChevronLeft, Zap, Info, Utensils, Coffee, Moon, Sun, ArrowRightLeft, MessageCircle, Sparkles, Loader2, ChefHat } from 'lucide-react';
+import { Activity, TrendingUp, Save, CheckCircle2, Dumbbell, ChevronRight, ChevronLeft, Zap, Info, Utensils, Coffee, Moon, ArrowRightLeft, Sparkles, Loader2, ChefHat, User, LogOut } from 'lucide-react';
 
-// --- MODE HORS LIGNE (Configuration locale) ---
-const auth = null;
-const db = null;
-const appId = "local-mode";
+// --- CONFIGURATION ---
+const APP_TITLE = "BATTOSAI"; // Ton nouveau titre
+const AVAILABLE_USERS = ["Battosai", "Invité", "Autre"]; // Ajoute des noms ici si tu veux
 
 // --- CITATIONS DE DAXTER ---
 const DAXTER_QUOTES = [
@@ -20,85 +19,85 @@ const DAXTER_QUOTES = [
   "Regarde-moi cette forme olympique ! T'es prêt pour l'Arène !"
 ];
 
-// --- PROGRAMME SPORT ---
-// J'ai remplacé toutes les images par ton lien : https://i.imgur.com/19fBmIC.png
-const imgUrl = "https://i.imgur.com/19fBmIC.jpg";
+// --- PROGRAMME SPORT (AVEC GIFS) ---
+// Note : Remplace les liens ci-dessous par des liens Giphy spécifiques pour chaque exo si tu veux !
+const defaultGif = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHR0Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4/26BkLZwkkRlDPMq6k/giphy.gif"; // Un GIF de gym générique
 
 const PROGRAMME_SPORT = {
   1: { 
     title: "Haut du corps & Abdos",
     subtitle: "Focus Haltères",
     exercises: [
-      { name: "Shoulder Press (Haltères)", type: "reps", target: "4 x 10-12", volume: 48, desc: "Assis/debout. Pousse les haltères au-dessus de la tête.", img: imgUrl },
-      { name: "Rowing un bras", type: "reps", target: "4 x 12 / côté", volume: 48, desc: "Genou sur banc, dos plat. Tire le coude vers le haut.", img: imgUrl },
-      { name: "Curl Biceps", type: "reps", target: "3 x 12", volume: 36, desc: "Coudes serrés au corps. Contracte les biceps.", img: imgUrl },
-      { name: "Triceps derrière la tête", type: "reps", target: "3 x 12", volume: 36, desc: "Haltère à deux mains derrière la nuque. Extension vers le ciel.", img: imgUrl },
-      { name: "Planche", type: "time", target: "3 x 45-60 sec", volume: 3, desc: "Gainage statique sur les avant-bras.", img: imgUrl }, 
-      { name: "Relevés de jambes", type: "reps", target: "3 x 12-15", volume: 45, desc: "Dos au sol, lève les jambes tendues.", img: imgUrl }
+      { name: "Shoulder Press (Haltères)", type: "reps", target: "4 x 10-12", volume: 48, desc: "Assis/debout. Pousse les haltères au-dessus de la tête.", img: "https://media.giphy.com/media/l41Yh18f5T017yPzC/giphy.gif" },
+      { name: "Rowing un bras", type: "reps", target: "4 x 12 / côté", volume: 48, desc: "Genou sur banc, dos plat. Tire le coude vers le haut.", img: defaultGif },
+      { name: "Curl Biceps", type: "reps", target: "3 x 12", volume: 36, desc: "Coudes serrés au corps. Contracte les biceps.", img: "https://media.giphy.com/media/ExampleBicepCurl/giphy.gif" }, // Remplace par un vrai lien
+      { name: "Triceps derrière la tête", type: "reps", target: "3 x 12", volume: 36, desc: "Haltère à deux mains derrière la nuque. Extension vers le ciel.", img: defaultGif },
+      { name: "Planche", type: "time", target: "3 x 45-60 sec", volume: 3, desc: "Gainage statique sur les avant-bras.", img: defaultGif }, 
+      { name: "Relevés de jambes", type: "reps", target: "3 x 12-15", volume: 45, desc: "Dos au sol, lève les jambes tendues.", img: defaultGif }
     ]
   },
   2: { 
     title: "Bas du corps & Gainage",
     subtitle: "Haltères Lourds",
     exercises: [
-      { name: "Squat Haltères", type: "reps", target: "4 x 12", volume: 48, desc: "Haltères aux épaules ou mains. Fesses en arrière, dos droit.", img: imgUrl },
-      { name: "Fentes Haltères", type: "reps", target: "3 x 12 / jambe", volume: 36, desc: "Grand pas en avant, genou arrière frôle le sol.", img: imgUrl },
-      { name: "Soulevé de terre (Jambes tendues)", type: "reps", target: "3 x 12", volume: 36, desc: "Dos plat, penche-toi en avant, sens l'étirement des ischios.", img: imgUrl },
-      { name: "Hip Thrust Haltères", type: "reps", target: "3 x 15", volume: 45, desc: "Dos sur banc, poids sur le bassin. Monte les fesses.", img: imgUrl },
-      { name: "Planche Latérale", type: "time", target: "2 x 30-40 sec / côté", volume: 2, desc: "Sur le côté, bassin haut et aligné.", img: imgUrl }
+      { name: "Squat Haltères", type: "reps", target: "4 x 12", volume: 48, desc: "Haltères aux épaules ou mains. Fesses en arrière, dos droit.", img: defaultGif },
+      { name: "Fentes Haltères", type: "reps", target: "3 x 12 / jambe", volume: 36, desc: "Grand pas en avant, genou arrière frôle le sol.", img: defaultGif },
+      { name: "Soulevé de terre (Jambes tendues)", type: "reps", target: "3 x 12", volume: 36, desc: "Dos plat, penche-toi en avant, sens l'étirement des ischios.", img: defaultGif },
+      { name: "Hip Thrust Haltères", type: "reps", target: "3 x 15", volume: 45, desc: "Dos sur banc, poids sur le bassin. Monte les fesses.", img: defaultGif },
+      { name: "Planche Latérale", type: "time", target: "2 x 30-40 sec / côté", volume: 2, desc: "Sur le côté, bassin haut et aligné.", img: defaultGif }
     ]
   },
   3: { 
     title: "HIIT + Corde",
     subtitle: "Cardio Intensif",
     exercises: [
-      { name: "Corde à sauter", type: "cardio", target: "15-20 min", volume: 20, desc: "Rythme soutenu pour faire monter le cardio.", img: imgUrl },
-      { name: "Circuit : Burpees", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat, planche, pompe, saut. Explosif !", img: imgUrl },
-      { name: "Circuit : Mountain Climbers", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Position pompe, cours sur place.", img: imgUrl },
-      { name: "Circuit : Squat Jumps", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat + saut à la remontée.", img: imgUrl },
-      { name: "Circuit : Sprint sur place", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Genoux hauts, à fond !", img: imgUrl }
+      { name: "Corde à sauter", type: "cardio", target: "15-20 min", volume: 20, desc: "Rythme soutenu pour faire monter le cardio.", img: defaultGif },
+      { name: "Circuit : Burpees", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat, planche, pompe, saut. Explosif !", img: defaultGif },
+      { name: "Circuit : Mountain Climbers", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Position pompe, cours sur place.", img: defaultGif },
+      { name: "Circuit : Squat Jumps", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat + saut à la remontée.", img: defaultGif },
+      { name: "Circuit : Sprint sur place", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Genoux hauts, à fond !", img: defaultGif }
     ]
   },
   4: { 
     title: "Full Body Haltères",
     subtitle: "Mobilité & Renfo",
     exercises: [
-      { name: "Rowing Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Buste penché, tire les deux haltères ensemble.", img: imgUrl },
-      { name: "Squat Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Contrôle bien la descente.", img: imgUrl },
-      { name: "Développé Épaules", type: "reps", target: "3 x 10", volume: 30, desc: "Pousse vers le ciel sans cambrer.", img: imgUrl },
-      { name: "Curl Biceps", type: "reps", target: "2 x 12", volume: 24, desc: "Mouvement propre.", img: imgUrl },
-      { name: "Triceps", type: "reps", target: "2 x 12", volume: 24, desc: "Extension au dessus de la tête ou kickback.", img: imgUrl },
-      { name: "Étirements + Mobilité", type: "cardio", target: "10 min", volume: 10, desc: "Récupération active, étirements.", img: imgUrl }
+      { name: "Rowing Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Buste penché, tire les deux haltères ensemble.", img: defaultGif },
+      { name: "Squat Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Contrôle bien la descente.", img: defaultGif },
+      { name: "Développé Épaules", type: "reps", target: "3 x 10", volume: 30, desc: "Pousse vers le ciel sans cambrer.", img: defaultGif },
+      { name: "Curl Biceps", type: "reps", target: "2 x 12", volume: 24, desc: "Mouvement propre.", img: defaultGif },
+      { name: "Triceps", type: "reps", target: "2 x 12", volume: 24, desc: "Extension au dessus de la tête ou kickback.", img: defaultGif },
+      { name: "Étirements + Mobilité", type: "cardio", target: "10 min", volume: 10, desc: "Récupération active, étirements.", img: defaultGif }
     ]
   },
   5: { 
     title: "Abdos + Core + Cardio",
     subtitle: "Sangle abdominale",
     exercises: [
-      { name: "Relevés de jambes", type: "reps", target: "4 x 12-15", volume: 60, desc: "Contrôle la descente.", img: imgUrl },
-      { name: "Crunch inversé", type: "reps", target: "3 x 15", volume: 45, desc: "Ramène genoux vers poitrine, décolle le bassin.", img: imgUrl },
-      { name: "Russian Twist (avec haltère)", type: "reps", target: "3 x 20", volume: 60, desc: "Rotation du buste avec un poids.", img: imgUrl },
-      { name: "Planche", type: "time", target: "3 x 1 min", volume: 3, desc: "Reste solide.", img: imgUrl },
-      { name: "Mountain Climbers", type: "time", target: "2 x 40 sec", volume: 2, desc: "Rythme rapide.", img: imgUrl },
-      { name: "Cardio Finition", type: "cardio", target: "15-20 min", volume: 20, desc: "Vélo ou marche rapide.", img: imgUrl }
+      { name: "Relevés de jambes", type: "reps", target: "4 x 12-15", volume: 60, desc: "Contrôle la descente.", img: defaultGif },
+      { name: "Crunch inversé", type: "reps", target: "3 x 15", volume: 45, desc: "Ramène genoux vers poitrine, décolle le bassin.", img: defaultGif },
+      { name: "Russian Twist (avec haltère)", type: "reps", target: "3 x 20", volume: 60, desc: "Rotation du buste avec un poids.", img: defaultGif },
+      { name: "Planche", type: "time", target: "3 x 1 min", volume: 3, desc: "Reste solide.", img: defaultGif },
+      { name: "Mountain Climbers", type: "time", target: "2 x 40 sec", volume: 2, desc: "Rythme rapide.", img: defaultGif },
+      { name: "Cardio Finition", type: "cardio", target: "15-20 min", volume: 20, desc: "Vélo ou marche rapide.", img: defaultGif }
     ]
   },
   6: { 
     title: "Gros Cardio",
     subtitle: "Brûle-graisse",
     exercises: [
-      { name: "Vélo ou Corde/Vélo", type: "cardio", target: "40-60 min", volume: 60, desc: "Zone d'endurance fondamentale.", img: imgUrl }
+      { name: "Vélo ou Corde/Vélo", type: "cardio", target: "40-60 min", volume: 60, desc: "Zone d'endurance fondamentale.", img: defaultGif }
     ]
   },
   0: { 
     title: "HIIT Léger + Rappel",
     subtitle: "Finition Semaine",
     exercises: [
-      { name: "HIIT", type: "time", target: "10-15 min", volume: 15, desc: "Court mais intense.", img: imgUrl },
-      { name: "Rowing", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel dos.", img: imgUrl },
-      { name: "Curl", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel biceps.", img: imgUrl },
-      { name: "Épaules", type: "reps", target: "2 x 10", volume: 20, desc: "Rappel épaules.", img: imgUrl },
-      { name: "Abdos", type: "time", target: "5 min", volume: 5, desc: "Libre.", img: imgUrl }
+      { name: "HIIT", type: "time", target: "10-15 min", volume: 15, desc: "Court mais intense.", img: defaultGif },
+      { name: "Rowing", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel dos.", img: defaultGif },
+      { name: "Curl", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel biceps.", img: defaultGif },
+      { name: "Épaules", type: "reps", target: "2 x 10", volume: 20, desc: "Rappel épaules.", img: defaultGif },
+      { name: "Abdos", type: "time", target: "5 min", volume: 5, desc: "Libre.", img: defaultGif }
     ]
   }
 };
@@ -115,18 +114,16 @@ const DAILY_MEAL_PLAN = {
 
 // --- COMPOSANTS ---
 
-const GlassCard = ({ children, className = "" }) => (
-  <div className={`bg-white/40 backdrop-blur-xl border border-white/40 shadow-lg rounded-3xl p-5 ${className}`}>
+const GlassCard = ({ children, className = "", onClick }) => (
+  <div onClick={onClick} className={`bg-white/40 backdrop-blur-xl border border-white/40 shadow-lg rounded-3xl p-5 ${className}`}>
     {children}
   </div>
 );
 
 const Mascot = ({ showQuote, quote, onClick }) => {
-  // L'ancien lien Wikia est cassé (404). On utilise ce lien fiable pour l'instant.
-  const daxterImg = "https://imgur.com/vzJ3RuR.jpg"; 
-  // ... le reste du code du composant Mascot ...
+  const daxterImg = "https://i.imgur.com/8Qe82f7.png"; // Image de mascotte (Oiseau ou autre)
   return (
-    <div className="fixed bottom-48 right-2 z-50 flex flex-col items-end pointer-events-none">
+    <div className="fixed bottom-28 right-2 z-50 flex flex-col items-end pointer-events-none">
       <style>{`
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
         .mascot-container { animation: float 4s ease-in-out infinite; }
@@ -209,6 +206,7 @@ const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, cu
               </div>
               {isInfoOpen && (
                   <div className="mb-4 mt-2 bg-white/60 rounded-xl p-3 border border-white/50 shadow-inner">
+                      {/* ZONE D'IMAGE / GIF */}
                       <div className="aspect-video bg-slate-200 rounded-lg mb-3 overflow-hidden shadow-sm relative">
                           <img src={ex.img} alt={ex.name} className="w-full h-full object-cover" />
                       </div>
@@ -250,7 +248,6 @@ const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, cu
 
 const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, generatedRecipe }) => (
     <div className="space-y-6 pb-24">
-       {/* Carte du haut : Gradient Thématique */}
        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-500/90 to-teal-600/90 backdrop-blur-md text-white p-6 shadow-2xl shadow-emerald-500/30 border border-white/20">
         <div className="absolute top-0 right-0 p-4 opacity-10"><Utensils size={100} /></div>
         <div className="relative z-10">
@@ -264,7 +261,6 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
         </div>
       </div>
       
-      {/* Affichage de la Recette Générée par l'IA */}
       {generatedRecipe && (
           <div className="animate-fade-in bg-white/80 p-5 rounded-3xl border-2 border-emerald-100 shadow-xl">
               <h3 className="font-bold text-emerald-800 text-lg flex items-center gap-2 mb-2"><Sparkles size={18} className="text-yellow-500" /> Suggestion du Chef</h3>
@@ -272,19 +268,13 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
           </div>
       )}
       
-      {/* Détail des Repas */}
       <div className="space-y-5">
         {todaysNutrition.meals.map((meal, idx) => {
             const Icon = meal.icon;
             
             if (meal.isFlexible) {
-                // MISE EN PAGE AMÉLIORÉE POUR LE REPAS FLEXIBLE (Plus de segmentation et d'effets)
                 return (
-                    <GlassCard 
-                        key={idx} 
-                        className="relative overflow-hidden border-orange-200/50 bg-orange-50/30 transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] active:scale-[0.98]"
-                    >
-                        {/* En-tête du Grand Dîner */}
+                    <GlassCard key={idx} className="relative overflow-hidden border-orange-200/50 bg-orange-50/30 transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] active:scale-[0.98]">
                         <div className="flex justify-between items-start mb-4">
                             <div className="flex items-center gap-4">
                                 <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 shadow-md"><Icon size={24} /></div>
@@ -295,12 +285,10 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
                             </div>
                         </div>
 
-                        {/* Placeholder Image (À remplacer par la photo du plat) */}
                         <div className="aspect-video mb-4 rounded-xl overflow-hidden bg-slate-200 shadow-inner">
-                             <img src="https://placehold.co/600x300/e2e8f0/475569?text=Image+du+Plat+Principal" alt="Plat du Jour" className="w-full h-full object-cover" />
+                             <img src="https://images.unsplash.com/photo-1512621404172-8d76d65c4002" alt="Plat Poulet Riz" className="w-full h-full object-cover" />
                         </div>
 
-                        {/* Étapes Segmentées (Rend les options plus claires) */}
                         <div className="space-y-4">
                             {meal.items.map((cat, i) => (
                                 <div key={i} className="bg-white/50 rounded-xl p-3 border border-white/60">
@@ -309,10 +297,8 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
                                         {cat.category}
                                     </h4>
                                     {cat.details && <p className="text-xs text-red-500 font-medium mb-1">{cat.details}</p>}
-                                    
                                     <div className="flex flex-wrap gap-2 pt-2 border-t border-slate-100/50">
                                         {cat.options.map((opt, k) => (
-                                            // Options individuelles claires
                                             <span key={k} className="text-sm font-semibold text-slate-700 bg-white px-3 py-1.5 rounded-lg border border-slate-100 shadow-sm flex-grow text-center transition-all duration-150 hover:bg-emerald-50 hover:border-emerald-200 cursor-pointer">
                                                 {opt}
                                             </span>
@@ -325,7 +311,6 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
                 );
             }
             
-            // Layout pour les repas non flexibles (Collation)
             return (
                 <GlassCard key={idx} className="relative overflow-hidden">
                     <div className="flex justify-between items-center mb-3">
@@ -352,7 +337,7 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
     </div>
 );
 
-const StatsView = ({ history }) => {
+const StatsView = ({ history, user }) => {
     const completionData = history.map(entry => {
         const workoutDay = PROGRAMME_SPORT[entry.dayIndex];
         let totalExpectedVolume = 0;
@@ -380,7 +365,7 @@ const StatsView = ({ history }) => {
         <div className="flex items-end justify-between px-2">
             <div>
                 <h2 className="text-3xl font-bold text-slate-900 tracking-tight">Progression</h2>
-                <p className="text-slate-500 text-sm">Qualité de tes séances</p>
+                <p className="text-slate-500 text-sm">Stats de {user}</p>
             </div>
             <div className="text-right">
                 <div className="text-2xl font-bold text-blue-600">{history.length}</div>
@@ -391,7 +376,7 @@ const StatsView = ({ history }) => {
         {history.length === 0 ? (
             <GlassCard className="flex flex-col items-center justify-center py-12 text-center border-dashed border-2 border-slate-300/50 bg-white/30">
                 <div className="bg-white p-4 rounded-full shadow-sm mb-4"><Activity className="text-slate-400" size={32} /></div>
-                <p className="text-slate-500 font-medium">En attente de ta première séance...</p>
+                <p className="text-slate-500 font-medium">Aucune donnée pour {user}...</p>
             </GlassCard>
         ) : (
             <>
@@ -421,7 +406,8 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('today');
   const [history, setHistory] = useState([]);
   const [todayLog, setTodayLog] = useState({});
-  const [user, setUser] = useState({ uid: "local-user" });
+  const [user, setUser] = useState("Battosai"); // Utilisateur par défaut
+  const [showProfileMenu, setShowProfileMenu] = useState(false); // Menu profil
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const [mascotQuote, setMascotQuote] = useState("");
@@ -430,47 +416,48 @@ const App = () => {
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
   const [loadingAdvice, setLoadingAdvice] = useState(false);
 
-  // --- LOGIQUE DE SAUVEGARDE LOCALE ---
-  
-  // 1. Charger l'historique depuis le navigateur au démarrage
+  // CLÉ DE STOCKAGE DYNAMIQUE SELON L'UTILISATEUR
+  const getStorageKey = () => `fitness_history_${user}`;
+  const getDraftKey = () => `workout_draft_${user}_${currentDate.toISOString().split('T')[0]}`;
+
+  // 1. Charger l'historique QUAND ON CHANGE D'UTILISATEUR
   useEffect(() => {
-    const savedHistory = localStorage.getItem('my_fitness_history');
+    const savedHistory = localStorage.getItem(getStorageKey());
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory));
+    } else {
+      setHistory([]); // Réinitialise si pas d'historique pour ce user
     }
     triggerMascotQuote();
-  }, []);
+  }, [user]); // Se déclenche quand 'user' change
 
-  // 2. Gestion du brouillon (pour ne pas perdre ses données si on ferme la page)
+  // 2. Gestion du brouillon
   useEffect(() => {
     const dateString = currentDate.toISOString().split('T')[0];
     const existingEntry = history.find(h => h.date === dateString);
     
     if (existingEntry) {
-        // Mode modification : on charge la séance existante
         const restoredLog = {};
         existingEntry.exercises.forEach(ex => {
             restoredLog[ex.name] = ex.performed;
         });
         setTodayLog(restoredLog);
     } else {
-        // Mode création : on charge le brouillon
-        const draft = localStorage.getItem(`workout_draft_${dateString}`);
+        const draft = localStorage.getItem(getDraftKey());
         if (draft) {
              setTodayLog(JSON.parse(draft));
         } else {
              setTodayLog({});
         }
     }
-  }, [currentDate, history]);
+  }, [currentDate, history, user]);
 
-  // 3. Sauvegarde auto du brouillon pendant la saisie
+  // 3. Sauvegarde auto du brouillon
   useEffect(() => {
-     const dateString = currentDate.toISOString().split('T')[0];
      if (Object.keys(todayLog).length > 0) {
-         localStorage.setItem(`workout_draft_${dateString}`, JSON.stringify(todayLog));
+         localStorage.setItem(getDraftKey(), JSON.stringify(todayLog));
      }
-  }, [todayLog, currentDate]);
+  }, [todayLog, currentDate, user]);
 
   const changeDate = (days) => {
     const newDate = new Date(currentDate);
@@ -519,8 +506,6 @@ const App = () => {
 
   const saveWorkout = async () => {
     const dateString = currentDate.toISOString().split('T')[0];
-    
-    // Création de l'entrée d'historique
     const newEntry = {
       date: dateString,
       dayIndex: currentDayIndex,
@@ -531,19 +516,15 @@ const App = () => {
       }))
     };
 
-    // Mise à jour et sauvegarde locale (Durable)
     const newHistory = [...history.filter(h => h.date !== dateString), newEntry];
     setHistory(newHistory);
-    localStorage.setItem('my_fitness_history', JSON.stringify(newHistory));
-    
-    // On efface le brouillon car c'est sauvegardé
-    localStorage.removeItem(`workout_draft_${dateString}`);
+    localStorage.setItem(getStorageKey(), JSON.stringify(newHistory));
+    localStorage.removeItem(getDraftKey());
 
-    // Feedback utilisateur
     const btn = document.getElementById('save-btn');
     if(btn) { btn.innerHTML = "Sauvegardé !"; setTimeout(() => btn.innerHTML = "ENREGISTRER LA SÉANCE", 2000); }
     
-    setMascotQuote("Yes ! C'est dans la boîte chef !");
+    setMascotQuote(`Top ${user} ! C'est dans la boîte !`);
     setShowMascotQuote(true);
     setTimeout(() => setShowMascotQuote(false), 8000);
   };
@@ -567,14 +548,36 @@ const App = () => {
       
       <div className="sticky top-0 z-20 backdrop-blur-xl bg-white/10 border-b border-white/20 px-6 py-4 flex justify-between items-center shadow-sm">
         <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight flex items-center gap-2">
-           <span className="bg-blue-600 text-white rounded-lg p-1 shadow-lg shadow-blue-500/20"><Dumbbell size={16} /></span> MY COACH
+           <span className="bg-blue-600 text-white rounded-lg p-1 shadow-lg shadow-blue-500/20"><Dumbbell size={16} /></span> {APP_TITLE}
         </h1>
-        {/* PHOTO DE PROFIL EN HAUT À DROITE */}
-        <img 
-            src="https://i.imgur.com/Qj2pFgY.png" 
-            alt="Profil" 
-            className="w-10 h-10 rounded-full border-2 border-white shadow-lg object-cover bg-slate-200"
-        />
+        
+        {/* MENU PROFIL MULTI-COMPTES */}
+        <div className="relative">
+            <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="relative group">
+                <img 
+                    src="https://i.imgur.com/Qj2pFgY.png" 
+                    alt="Profil" 
+                    className="w-10 h-10 rounded-full border-2 border-white shadow-lg object-cover bg-slate-200 transition-transform group-hover:scale-105"
+                />
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+            </button>
+
+            {showProfileMenu && (
+                <div className="absolute right-0 top-12 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 p-2 z-50 animate-in fade-in slide-in-from-top-2">
+                    <div className="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">Changer de compte</div>
+                    {AVAILABLE_USERS.map((u) => (
+                        <button 
+                            key={u}
+                            onClick={() => { setUser(u); setShowProfileMenu(false); }}
+                            className={`w-full text-left px-3 py-2 rounded-xl flex items-center gap-2 transition-colors ${user === u ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 text-slate-700'}`}
+                        >
+                            <User size={16} /> {u}
+                            {user === u && <CheckCircle2 size={14} className="ml-auto" />}
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
       </div>
 
       <div className="max-w-md mx-auto p-4 pt-6 relative z-10">
@@ -596,7 +599,7 @@ const App = () => {
             loadingRecipe={loadingRecipe}
             generatedRecipe={generatedRecipe}
         />}
-        {activeTab === 'stats' && <StatsView history={history} />}
+        {activeTab === 'stats' && <StatsView history={history} user={user} />}
       </div>
 
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[95%] max-w-sm z-30">
