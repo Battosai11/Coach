@@ -2,102 +2,137 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { Activity, TrendingUp, Save, CheckCircle2, Dumbbell, ChevronRight, ChevronLeft, Zap, Info, Utensils, Coffee, Moon, ArrowRightLeft, Sparkles, Loader2, ChefHat, User, LogOut } from 'lucide-react';
 
-// --- CONFIGURATION ---
-const APP_TITLE = "BATTOSAI"; // Ton nouveau titre
-const AVAILABLE_USERS = ["Battosai", "Invité", "Autre"]; // Ajoute des noms ici si tu veux
+// ==========================================
+// 1. CONFIGURATION DES PROFILS (AVATARS)
+// ==========================================
+const USER_CONFIG = {
+  "Battosai": { 
+    avatar: "https://i.imgur.com/Qj2pFgY.png", // Ton image perso
+    theme: "blue", // Couleur du thème
+    label: "Sensei"
+  },
+  "Invité": { 
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Felix", // Avatar généré auto
+    theme: "emerald",
+    label: "Visiteur"
+  },
+  "GymBro": { 
+    avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka", // Avatar généré auto
+    theme: "orange",
+    label: "Partenaire"
+  }
+};
 
-// --- CITATIONS DE DAXTER ---
+// ==========================================
+// 2. BIBLIOTHÈQUE DE GIFs (CHANGE LES LIENS ICI !)
+// ==========================================
+// J'ai mis des GIFs réels. Si tu veux changer, remplace le lien entre guillemets.
+const EXERCISE_GIFS = {
+  "Shoulder Press": "https://media.giphy.com/media/3o7TjqCSr0f96w3K5q/giphy.gif",
+  "Rowing": "https://media.giphy.com/media/10006Z2u7L1Wc/giphy.gif",
+  "Curl": "https://media.giphy.com/media/H4DjXQXamtTiIuCcRu/giphy.gif",
+  "Triceps": "https://media.giphy.com/media/xT9Igwe1F5Xg7q6sDe/giphy.gif",
+  "Planche": "https://media.giphy.com/media/xT8qBff8cKDDRGTWlW/giphy.gif",
+  "Abs": "https://media.giphy.com/media/3o6Zxp7eG5WnQo64Tu/giphy.gif",
+  "Squat": "https://media.giphy.com/media/12h4r12uD9eKli/giphy.gif",
+  "Fentes": "https://media.giphy.com/media/3o7qDQ4kcSD1PLM3BK/giphy.gif",
+  "Deadlift": "https://media.giphy.com/media/p8wLy6i3OEI1i/giphy.gif",
+  "HipThrust": "https://media.giphy.com/media/l41Yy4J96X8ehz8xG/giphy.gif",
+  "Cardio": "https://media.giphy.com/media/l0HlPtbGpcnqa0fja/giphy.gif",
+  "Burpees": "https://media.giphy.com/media/26BkNHX097r61A1uE/giphy.gif",
+  "Default": "https://media.giphy.com/media/26BkLZwkkRlDPMq6k/giphy.gif" // Image par défaut si pas trouvé
+};
+
+// ==========================================
+// 3. CITATIONS & CONFIGURATION GLOBALE
+// ==========================================
+const APP_TITLE = "BATTOSAI"; 
 const DAXTER_QUOTES = [
-  "Wow ! T'es une vraie bête ! Même les Metal Heads auraient peur de toi !",
-  "Allez hop hop hop ! On se bouge le fessier, héros !",
+  "Wow ! T'es une vraie bête !",
+  "Allez hop hop hop ! On se bouge !",
   "C'est tout ce que t'as ? Je suis sûr que tu peux faire mieux !",
-  "Joli mouvement ! Presque aussi gracieux que moi... presque.",
-  "Hé ! Si tu continues comme ça, tu vas finir par sauver le monde !",
-  "On lâche rien ! Pense à la pile d'énergie qui t'attend à la fin !",
-  "T'as vu ces muscles ? Fais gaffe, tu vas craquer ton t-shirt !",
-  "Bien joué ! Maintenant, on va manger ? J'ai faim moi !",
-  "Regarde-moi cette forme olympique ! T'es prêt pour l'Arène !"
+  "Joli mouvement ! Presque aussi gracieux que moi...",
+  "On lâche rien ! Pense à la pile d'énergie !",
+  "T'as vu ces muscles ? Fais gaffe à ton t-shirt !",
+  "Regarde-moi cette forme olympique !"
 ];
 
-// --- PROGRAMME SPORT (AVEC GIFS) ---
-// Note : Remplace les liens ci-dessous par des liens Giphy spécifiques pour chaque exo si tu veux !
-const defaultGif = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHR0Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4Z3B4/26BkLZwkkRlDPMq6k/giphy.gif"; // Un GIF de gym générique
-
+// --- PROGRAMME SPORT (LIÉ AUX GIFs) ---
 const PROGRAMME_SPORT = {
   1: { 
     title: "Haut du corps & Abdos",
     subtitle: "Focus Haltères",
     exercises: [
-      { name: "Shoulder Press (Haltères)", type: "reps", target: "4 x 10-12", volume: 48, desc: "Assis/debout. Pousse les haltères au-dessus de la tête.", img: "https://media.giphy.com/media/l41Yh18f5T017yPzC/giphy.gif" },
-      { name: "Rowing un bras", type: "reps", target: "4 x 12 / côté", volume: 48, desc: "Genou sur banc, dos plat. Tire le coude vers le haut.", img: defaultGif },
-      { name: "Curl Biceps", type: "reps", target: "3 x 12", volume: 36, desc: "Coudes serrés au corps. Contracte les biceps.", img: "https://media.giphy.com/media/ExampleBicepCurl/giphy.gif" }, // Remplace par un vrai lien
-      { name: "Triceps derrière la tête", type: "reps", target: "3 x 12", volume: 36, desc: "Haltère à deux mains derrière la nuque. Extension vers le ciel.", img: defaultGif },
-      { name: "Planche", type: "time", target: "3 x 45-60 sec", volume: 3, desc: "Gainage statique sur les avant-bras.", img: defaultGif }, 
-      { name: "Relevés de jambes", type: "reps", target: "3 x 12-15", volume: 45, desc: "Dos au sol, lève les jambes tendues.", img: defaultGif }
+      { name: "Shoulder Press (Haltères)", type: "reps", target: "4 x 10-12", volume: 48, desc: "Pousse au-dessus de la tête.", gifKey: "Shoulder Press" },
+      { name: "Rowing un bras", type: "reps", target: "4 x 12 / côté", volume: 48, desc: "Dos plat, tire le coude.", gifKey: "Rowing" },
+      { name: "Curl Biceps", type: "reps", target: "3 x 12", volume: 36, desc: "Contrôle la descente.", gifKey: "Curl" },
+      { name: "Triceps derrière la tête", type: "reps", target: "3 x 12", volume: 36, desc: "Extension vers le ciel.", gifKey: "Triceps" },
+      { name: "Planche", type: "time", target: "3 x 45-60 sec", volume: 3, desc: "Gainage statique.", gifKey: "Planche" }, 
+      { name: "Relevés de jambes", type: "reps", target: "3 x 12-15", volume: 45, desc: "Dos au sol, jambes tendues.", gifKey: "Abs" }
     ]
   },
   2: { 
     title: "Bas du corps & Gainage",
     subtitle: "Haltères Lourds",
     exercises: [
-      { name: "Squat Haltères", type: "reps", target: "4 x 12", volume: 48, desc: "Haltères aux épaules ou mains. Fesses en arrière, dos droit.", img: defaultGif },
-      { name: "Fentes Haltères", type: "reps", target: "3 x 12 / jambe", volume: 36, desc: "Grand pas en avant, genou arrière frôle le sol.", img: defaultGif },
-      { name: "Soulevé de terre (Jambes tendues)", type: "reps", target: "3 x 12", volume: 36, desc: "Dos plat, penche-toi en avant, sens l'étirement des ischios.", img: defaultGif },
-      { name: "Hip Thrust Haltères", type: "reps", target: "3 x 15", volume: 45, desc: "Dos sur banc, poids sur le bassin. Monte les fesses.", img: defaultGif },
-      { name: "Planche Latérale", type: "time", target: "2 x 30-40 sec / côté", volume: 2, desc: "Sur le côté, bassin haut et aligné.", img: defaultGif }
+      { name: "Squat Haltères", type: "reps", target: "4 x 12", volume: 48, desc: "Fesses en arrière, dos droit.", gifKey: "Squat" },
+      { name: "Fentes Haltères", type: "reps", target: "3 x 12 / jambe", volume: 36, desc: "Genou arrière frôle le sol.", gifKey: "Fentes" },
+      { name: "Soulevé de terre", type: "reps", target: "3 x 12", volume: 36, desc: "Jambes tendues, dos plat.", gifKey: "Deadlift" },
+      { name: "Hip Thrust Haltères", type: "reps", target: "3 x 15", volume: 45, desc: "Monte le bassin.", gifKey: "HipThrust" },
+      { name: "Planche Latérale", type: "time", target: "2 x 30-40 sec / côté", volume: 2, desc: "Bassin haut.", gifKey: "Planche" }
     ]
   },
   3: { 
     title: "HIIT + Corde",
     subtitle: "Cardio Intensif",
     exercises: [
-      { name: "Corde à sauter", type: "cardio", target: "15-20 min", volume: 20, desc: "Rythme soutenu pour faire monter le cardio.", img: defaultGif },
-      { name: "Circuit : Burpees", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat, planche, pompe, saut. Explosif !", img: defaultGif },
-      { name: "Circuit : Mountain Climbers", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Position pompe, cours sur place.", img: defaultGif },
-      { name: "Circuit : Squat Jumps", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Squat + saut à la remontée.", img: defaultGif },
-      { name: "Circuit : Sprint sur place", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Genoux hauts, à fond !", img: defaultGif }
+      { name: "Corde à sauter", type: "cardio", target: "15-20 min", volume: 20, desc: "Rythme soutenu.", gifKey: "Cardio" },
+      { name: "Circuit : Burpees", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Explosif !", gifKey: "Burpees" },
+      { name: "Circuit : Mountain Climbers", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Cours sur place.", gifKey: "Cardio" },
+      { name: "Circuit : Squat Jumps", type: "reps", target: "3 tours : 12 reps", volume: 36, desc: "Saut à la remontée.", gifKey: "Squat" },
+      { name: "Circuit : Sprint sur place", type: "time", target: "3 tours : 30 sec", volume: 3, desc: "Genoux hauts.", gifKey: "Cardio" }
     ]
   },
   4: { 
     title: "Full Body Haltères",
     subtitle: "Mobilité & Renfo",
     exercises: [
-      { name: "Rowing Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Buste penché, tire les deux haltères ensemble.", img: defaultGif },
-      { name: "Squat Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Contrôle bien la descente.", img: defaultGif },
-      { name: "Développé Épaules", type: "reps", target: "3 x 10", volume: 30, desc: "Pousse vers le ciel sans cambrer.", img: defaultGif },
-      { name: "Curl Biceps", type: "reps", target: "2 x 12", volume: 24, desc: "Mouvement propre.", img: defaultGif },
-      { name: "Triceps", type: "reps", target: "2 x 12", volume: 24, desc: "Extension au dessus de la tête ou kickback.", img: defaultGif },
-      { name: "Étirements + Mobilité", type: "cardio", target: "10 min", volume: 10, desc: "Récupération active, étirements.", img: defaultGif }
+      { name: "Rowing Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Tire les deux haltères.", gifKey: "Rowing" },
+      { name: "Squat Haltères", type: "reps", target: "3 x 12", volume: 36, desc: "Contrôle la descente.", gifKey: "Squat" },
+      { name: "Développé Épaules", type: "reps", target: "3 x 10", volume: 30, desc: "Pousse vers le ciel.", gifKey: "Shoulder Press" },
+      { name: "Curl Biceps", type: "reps", target: "2 x 12", volume: 24, desc: "Propre.", gifKey: "Curl" },
+      { name: "Triceps", type: "reps", target: "2 x 12", volume: 24, desc: "Kickback.", gifKey: "Triceps" },
+      { name: "Étirements", type: "cardio", target: "10 min", volume: 10, desc: "Récupération.", gifKey: "Default" }
     ]
   },
   5: { 
     title: "Abdos + Core + Cardio",
     subtitle: "Sangle abdominale",
     exercises: [
-      { name: "Relevés de jambes", type: "reps", target: "4 x 12-15", volume: 60, desc: "Contrôle la descente.", img: defaultGif },
-      { name: "Crunch inversé", type: "reps", target: "3 x 15", volume: 45, desc: "Ramène genoux vers poitrine, décolle le bassin.", img: defaultGif },
-      { name: "Russian Twist (avec haltère)", type: "reps", target: "3 x 20", volume: 60, desc: "Rotation du buste avec un poids.", img: defaultGif },
-      { name: "Planche", type: "time", target: "3 x 1 min", volume: 3, desc: "Reste solide.", img: defaultGif },
-      { name: "Mountain Climbers", type: "time", target: "2 x 40 sec", volume: 2, desc: "Rythme rapide.", img: defaultGif },
-      { name: "Cardio Finition", type: "cardio", target: "15-20 min", volume: 20, desc: "Vélo ou marche rapide.", img: defaultGif }
+      { name: "Relevés de jambes", type: "reps", target: "4 x 12-15", volume: 60, desc: "Contrôle.", gifKey: "Abs" },
+      { name: "Crunch inversé", type: "reps", target: "3 x 15", volume: 45, desc: "Décolle le bassin.", gifKey: "Abs" },
+      { name: "Russian Twist", type: "reps", target: "3 x 20", volume: 60, desc: "Rotation buste.", gifKey: "Abs" },
+      { name: "Planche", type: "time", target: "3 x 1 min", volume: 3, desc: "Solide.", gifKey: "Planche" },
+      { name: "Mountain Climbers", type: "time", target: "2 x 40 sec", volume: 2, desc: "Rapide.", gifKey: "Cardio" },
+      { name: "Cardio Finition", type: "cardio", target: "15-20 min", volume: 20, desc: "Vélo/Marche.", gifKey: "Cardio" }
     ]
   },
   6: { 
     title: "Gros Cardio",
     subtitle: "Brûle-graisse",
     exercises: [
-      { name: "Vélo ou Corde/Vélo", type: "cardio", target: "40-60 min", volume: 60, desc: "Zone d'endurance fondamentale.", img: defaultGif }
+      { name: "Vélo ou Corde/Vélo", type: "cardio", target: "40-60 min", volume: 60, desc: "Endurance fondamentale.", gifKey: "Cardio" }
     ]
   },
   0: { 
     title: "HIIT Léger + Rappel",
     subtitle: "Finition Semaine",
     exercises: [
-      { name: "HIIT", type: "time", target: "10-15 min", volume: 15, desc: "Court mais intense.", img: defaultGif },
-      { name: "Rowing", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel dos.", img: defaultGif },
-      { name: "Curl", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel biceps.", img: defaultGif },
-      { name: "Épaules", type: "reps", target: "2 x 10", volume: 20, desc: "Rappel épaules.", img: defaultGif },
-      { name: "Abdos", type: "time", target: "5 min", volume: 5, desc: "Libre.", img: defaultGif }
+      { name: "HIIT", type: "time", target: "10-15 min", volume: 15, desc: "Court intense.", gifKey: "Cardio" },
+      { name: "Rowing", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel dos.", gifKey: "Rowing" },
+      { name: "Curl", type: "reps", target: "2 x 12", volume: 24, desc: "Rappel biceps.", gifKey: "Curl" },
+      { name: "Épaules", type: "reps", target: "2 x 10", volume: 20, desc: "Rappel épaules.", gifKey: "Shoulder Press" },
+      { name: "Abdos", type: "time", target: "5 min", volume: 5, desc: "Libre.", gifKey: "Abs" }
     ]
   }
 };
@@ -114,14 +149,14 @@ const DAILY_MEAL_PLAN = {
 
 // --- COMPOSANTS ---
 
-const GlassCard = ({ children, className = "", onClick }) => (
+const GlassCard = ({ children, className = "", onClick, theme = "blue" }) => (
   <div onClick={onClick} className={`bg-white/40 backdrop-blur-xl border border-white/40 shadow-lg rounded-3xl p-5 ${className}`}>
     {children}
   </div>
 );
 
 const Mascot = ({ showQuote, quote, onClick }) => {
-  const daxterImg = "https://i.imgur.com/8Qe82f7.png"; // Image de mascotte (Oiseau ou autre)
+  const daxterImg = "https://i.imgur.com/8Qe82f7.png"; // Image de mascotte (Oiseau)
   return (
     <div className="fixed bottom-28 right-2 z-50 flex flex-col items-end pointer-events-none">
       <style>{`
@@ -138,8 +173,24 @@ const Mascot = ({ showQuote, quote, onClick }) => {
   );
 };
 
-const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, currentDate, changeDate, getGeminiAdvice, loadingAdvice, history, currentDayIndex }) => {
+const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, currentDate, changeDate, getGeminiAdvice, loadingAdvice, history, currentDayIndex, themeColor }) => {
   const [infoOpen, setInfoOpen] = useState(null);
+
+  // Fonction pour obtenir le bon style selon le thème
+  const getThemeClasses = (isActive) => {
+    if (!isActive) return 'text-slate-400 hover:text-slate-600';
+    if (themeColor === 'blue') return 'bg-blue-100 text-blue-600';
+    if (themeColor === 'emerald') return 'bg-emerald-100 text-emerald-600';
+    if (themeColor === 'orange') return 'bg-orange-100 text-orange-600';
+    return 'bg-blue-100 text-blue-600';
+  };
+  
+  const getHeaderGradient = () => {
+    if (themeColor === 'blue') return 'from-blue-600/90 to-indigo-700/90 shadow-blue-500/30';
+    if (themeColor === 'emerald') return 'from-emerald-600/90 to-teal-700/90 shadow-emerald-500/30';
+    if (themeColor === 'orange') return 'from-orange-500/90 to-red-600/90 shadow-orange-500/30';
+    return 'from-blue-600/90 to-indigo-700/90 shadow-blue-500/30';
+  };
 
   const getLastSessionStats = (exerciseName) => {
     const relevantHistory = history.filter(h => h.dayIndex === currentDayIndex && h.date !== currentDate.toISOString().split('T')[0]);
@@ -156,22 +207,22 @@ const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, cu
 
   return (
     <div className="space-y-6 pb-24">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600/90 to-indigo-700/90 backdrop-blur-md text-white p-6 shadow-2xl shadow-blue-500/30 border border-white/20">
+      <div className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${getHeaderGradient()} backdrop-blur-md text-white p-6 shadow-2xl border border-white/20 transition-colors duration-500`}>
         <div className="absolute top-0 right-0 p-4 opacity-10"><Dumbbell size={100} /></div>
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-4 bg-white/20 rounded-xl p-2 backdrop-blur-sm">
             <button onClick={() => changeDate(-1)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><ChevronLeft size={20} /></button>
             <div className="text-center">
-                <div className="text-xs font-medium text-blue-200 uppercase tracking-wider">Date</div>
+                <div className="text-xs font-medium text-white/80 uppercase tracking-wider">Date</div>
                 <div className="font-bold text-lg capitalize">
                     {currentDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}
                 </div>
             </div>
             <button onClick={() => changeDate(1)} className="p-2 hover:bg-white/20 rounded-lg transition-colors"><ChevronRight size={20} /></button>
           </div>
-          <div className="text-blue-200 text-sm font-medium tracking-wider mb-1 uppercase">Entraînement</div>
+          <div className="text-white/80 text-sm font-medium tracking-wider mb-1 uppercase">Entraînement</div>
           <h2 className="text-3xl font-bold mb-1 tracking-tight">{todaysWorkout.title}</h2>
-          <p className="text-blue-100/90 font-light mb-4">{todaysWorkout.subtitle}</p>
+          <p className="text-white/70 font-light mb-4">{todaysWorkout.subtitle}</p>
           <button onClick={getGeminiAdvice} disabled={loadingAdvice} className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all border border-white/20">
             {loadingAdvice ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
             {loadingAdvice ? "Daxter réfléchit..." : "Demander conseil à Daxter"}
@@ -183,17 +234,20 @@ const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, cu
           const isDone = todayLog[ex.name]?.done;
           const isInfoOpen = infoOpen === idx;
           const lastStats = getLastSessionStats(ex.name);
+          // Récupération du GIF depuis la bibliothèque
+          const gifUrl = EXERCISE_GIFS[ex.gifKey] || EXERCISE_GIFS["Default"];
+
           return (
             <GlassCard key={idx} className={`transition-all duration-300 ${isDone ? 'bg-green-50/50 border-green-200/50 ring-1 ring-green-400/30' : ''}`}>
               <div className="flex justify-between items-start mb-2">
                 <div>
                   <div className="flex items-center gap-2">
                       <h3 className={`font-bold text-lg ${isDone ? 'text-green-900' : 'text-slate-800'}`}>{ex.name}</h3>
-                      <button onClick={() => setInfoOpen(isInfoOpen ? null : idx)} className={`p-1 rounded-full transition-colors ${isInfoOpen ? 'bg-blue-100 text-blue-600' : 'text-slate-400 hover:text-blue-500'}`}><Info size={18} /></button>
+                      <button onClick={() => setInfoOpen(isInfoOpen ? null : idx)} className={`p-1 rounded-full transition-colors ${getThemeClasses(isInfoOpen)}`}><Info size={18} /></button>
                   </div>
                   <div className="flex flex-wrap gap-2 mt-1">
                     <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white/40 text-slate-600 text-xs font-medium border border-white/20">
-                        <Zap size={10} className={isDone ? 'text-green-600' : 'text-blue-600'} /> {ex.target}
+                        <Zap size={10} className={isDone ? 'text-green-600' : 'text-slate-500'} /> {ex.target}
                     </div>
                     {lastStats && (
                         <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-100/50 text-orange-700 text-xs font-bold border border-orange-200/50">
@@ -204,15 +258,17 @@ const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, cu
                 </div>
                 <button onClick={() => handleLogChange(ex.name, 'done', !isDone)} className={`p-2 rounded-full transition-colors ${isDone ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' : 'bg-white/50 text-slate-500 hover:bg-white'}`}><CheckCircle2 size={22} /></button>
               </div>
+              
+              {/* ZONE GIF AUTOMATISÉE */}
               {isInfoOpen && (
-                  <div className="mb-4 mt-2 bg-white/60 rounded-xl p-3 border border-white/50 shadow-inner">
-                      {/* ZONE D'IMAGE / GIF */}
-                      <div className="aspect-video bg-slate-200 rounded-lg mb-3 overflow-hidden shadow-sm relative">
-                          <img src={ex.img} alt={ex.name} className="w-full h-full object-cover" />
+                  <div className="mb-4 mt-2 bg-white/60 rounded-xl p-3 border border-white/50 shadow-inner animate-in fade-in slide-in-from-top-2">
+                      <div className="aspect-video bg-slate-900 rounded-lg mb-3 overflow-hidden shadow-sm relative">
+                          <img src={gifUrl} alt={ex.name} className="w-full h-full object-cover" />
                       </div>
                       <p className="text-sm text-slate-700 font-medium">{ex.desc}</p>
                   </div>
               )}
+
               <div className={`transition-all duration-500 overflow-hidden ${isDone ? 'max-h-0 opacity-50' : 'max-h-32 opacity-100'}`}>
                 <div className="flex gap-3 items-center mt-2">
                   {(ex.type === 'reps' || ex.type === 'time') && (
@@ -260,18 +316,15 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
           </button>
         </div>
       </div>
-      
       {generatedRecipe && (
           <div className="animate-fade-in bg-white/80 p-5 rounded-3xl border-2 border-emerald-100 shadow-xl">
               <h3 className="font-bold text-emerald-800 text-lg flex items-center gap-2 mb-2"><Sparkles size={18} className="text-yellow-500" /> Suggestion du Chef</h3>
               <div className="text-slate-700 text-sm whitespace-pre-line leading-relaxed">{generatedRecipe}</div>
           </div>
       )}
-      
       <div className="space-y-5">
         {todaysNutrition.meals.map((meal, idx) => {
             const Icon = meal.icon;
-            
             if (meal.isFlexible) {
                 return (
                     <GlassCard key={idx} className="relative overflow-hidden border-orange-200/50 bg-orange-50/30 transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] active:scale-[0.98]">
@@ -284,11 +337,9 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
                                 </div>
                             </div>
                         </div>
-
                         <div className="aspect-video mb-4 rounded-xl overflow-hidden bg-slate-200 shadow-inner">
                              <img src="https://images.unsplash.com/photo-1512621404172-8d76d65c4002" alt="Plat Poulet Riz" className="w-full h-full object-cover" />
                         </div>
-
                         <div className="space-y-4">
                             {meal.items.map((cat, i) => (
                                 <div key={i} className="bg-white/50 rounded-xl p-3 border border-white/60">
@@ -310,7 +361,6 @@ const NutritionView = ({ todaysNutrition, getGeminiRecipe, loadingRecipe, genera
                     </GlassCard>
                 );
             }
-            
             return (
                 <GlassCard key={idx} className="relative overflow-hidden">
                     <div className="flex justify-between items-center mb-3">
@@ -406,17 +456,19 @@ const App = () => {
   const [activeTab, setActiveTab] = useState('today');
   const [history, setHistory] = useState([]);
   const [todayLog, setTodayLog] = useState({});
+  
+  // --- GESTION UTILISATEUR ---
   const [user, setUser] = useState("Battosai"); // Utilisateur par défaut
-  const [showProfileMenu, setShowProfileMenu] = useState(false); // Menu profil
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  
   const [currentDate, setCurrentDate] = useState(new Date());
-
   const [mascotQuote, setMascotQuote] = useState("");
   const [showMascotQuote, setShowMascotQuote] = useState(false);
   const [loadingRecipe, setLoadingRecipe] = useState(false);
   const [generatedRecipe, setGeneratedRecipe] = useState(null);
   const [loadingAdvice, setLoadingAdvice] = useState(false);
 
-  // CLÉ DE STOCKAGE DYNAMIQUE SELON L'UTILISATEUR
+  // CLÉS DE STOCKAGE
   const getStorageKey = () => `fitness_history_${user}`;
   const getDraftKey = () => `workout_draft_${user}_${currentDate.toISOString().split('T')[0]}`;
 
@@ -426,29 +478,24 @@ const App = () => {
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory));
     } else {
-      setHistory([]); // Réinitialise si pas d'historique pour ce user
+      setHistory([]); 
     }
-    triggerMascotQuote();
-  }, [user]); // Se déclenche quand 'user' change
+    setMascotQuote(`Salut ${user} ! Prêt à tout casser ?`);
+    setShowMascotQuote(true);
+    setTimeout(() => setShowMascotQuote(false), 5000);
+  }, [user]);
 
   // 2. Gestion du brouillon
   useEffect(() => {
     const dateString = currentDate.toISOString().split('T')[0];
     const existingEntry = history.find(h => h.date === dateString);
-    
     if (existingEntry) {
         const restoredLog = {};
-        existingEntry.exercises.forEach(ex => {
-            restoredLog[ex.name] = ex.performed;
-        });
+        existingEntry.exercises.forEach(ex => { restoredLog[ex.name] = ex.performed; });
         setTodayLog(restoredLog);
     } else {
         const draft = localStorage.getItem(getDraftKey());
-        if (draft) {
-             setTodayLog(JSON.parse(draft));
-        } else {
-             setTodayLog({});
-        }
+        setTodayLog(draft ? JSON.parse(draft) : {});
     }
   }, [currentDate, history, user]);
 
@@ -479,8 +526,8 @@ const App = () => {
   const getGeminiRecipe = async () => {
     setLoadingRecipe(true);
     setTimeout(() => {
-        setGeneratedRecipe("Recette Spéciale Mode Hors Ligne :\n\nMélangez le fromage blanc avec le muesli. Ajoutez le fruit coupé en dés. Dégustez ! Simple et efficace.");
-        setMascotQuote("Miam ! C'est prêt !");
+        setGeneratedRecipe("Recette Rapide :\n\nPoulet grillé (200g) + Riz Basmati (150g) + Brocolis vapeur. Un filet d'huile d'olive.");
+        setMascotQuote("Simple. Efficace. Miam !");
         setShowMascotQuote(true);
         setLoadingRecipe(false);
         setTimeout(() => setShowMascotQuote(false), 5000);
@@ -490,7 +537,7 @@ const App = () => {
   const getGeminiAdvice = async () => {
     setLoadingAdvice(true);
     setTimeout(() => {
-        setMascotQuote("Reste concentré sur ta respiration ma poule ! Tu gères !");
+        setMascotQuote("Garde le dos bien droit ma poule !");
         setShowMascotQuote(true);
         setLoadingAdvice(false);
         setTimeout(() => setShowMascotQuote(false), 8000);
@@ -529,50 +576,50 @@ const App = () => {
     setTimeout(() => setShowMascotQuote(false), 8000);
   };
 
+  // INFO UTILISATEUR ACTUEL
+  const currentUserConfig = USER_CONFIG[user] || USER_CONFIG["Invité"];
+
   return (
-    <div className="min-h-screen font-sans selection:bg-blue-200 text-slate-800 relative overflow-hidden">
+    <div className={`min-h-screen font-sans text-slate-800 relative overflow-hidden transition-colors duration-500 bg-slate-50`}>
         <Mascot showQuote={showMascotQuote} quote={mascotQuote} onClick={triggerMascotQuote} />
         
-        <style>{`
-            @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
-            .animate-blob { animation: blob 7s infinite; }
-            .animation-delay-2000 { animation-delay: 2s; }
-            .animation-delay-4000 { animation-delay: 4s; }
-        `}</style>
+        {/* FOND D'ÉCRAN DYNAMIQUE SELON LE USER */}
         <div className="fixed inset-0 -z-10 bg-slate-50 overflow-hidden">
-             <div className="absolute inset-0 bg-gradient-to-b from-blue-50/50 to-indigo-100/50"></div>
+             <div className={`absolute inset-0 bg-gradient-to-b ${currentUserConfig.theme === 'blue' ? 'from-blue-50/50 to-indigo-100/50' : currentUserConfig.theme === 'emerald' ? 'from-emerald-50/50 to-teal-100/50' : 'from-orange-50/50 to-red-100/50'}`}></div>
              <div className="absolute top-0 -left-4 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob"></div>
-             <div className="absolute top-0 -right-4 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-2000"></div>
-             <div className="absolute -bottom-32 left-20 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-40 animate-blob animation-delay-4000"></div>
         </div>
       
       <div className="sticky top-0 z-20 backdrop-blur-xl bg-white/10 border-b border-white/20 px-6 py-4 flex justify-between items-center shadow-sm">
         <h1 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-600 tracking-tight flex items-center gap-2">
-           <span className="bg-blue-600 text-white rounded-lg p-1 shadow-lg shadow-blue-500/20"><Dumbbell size={16} /></span> {APP_TITLE}
+           <span className={`${currentUserConfig.theme === 'blue' ? 'bg-blue-600' : currentUserConfig.theme === 'emerald' ? 'bg-emerald-600' : 'bg-orange-600'} text-white rounded-lg p-1 shadow-lg shadow-blue-500/20`}><Dumbbell size={16} /></span> {APP_TITLE}
         </h1>
         
-        {/* MENU PROFIL MULTI-COMPTES */}
+        {/* MENU PROFIL */}
         <div className="relative">
-            <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="relative group">
+            <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="relative group flex items-center gap-2">
+                <div className="text-right hidden sm:block">
+                    <div className="text-xs font-bold text-slate-500">{currentUserConfig.label}</div>
+                    <div className="text-sm font-bold text-slate-900 leading-none">{user}</div>
+                </div>
                 <img 
-                    src="https://i.imgur.com/Qj2pFgY.png" 
+                    src={currentUserConfig.avatar} 
                     alt="Profil" 
                     className="w-10 h-10 rounded-full border-2 border-white shadow-lg object-cover bg-slate-200 transition-transform group-hover:scale-105"
                 />
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
             </button>
 
             {showProfileMenu && (
-                <div className="absolute right-0 top-12 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 p-2 z-50 animate-in fade-in slide-in-from-top-2">
+                <div className="absolute right-0 top-14 w-56 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 p-2 z-50 animate-in fade-in slide-in-from-top-2">
                     <div className="px-3 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 mb-1">Changer de compte</div>
-                    {AVAILABLE_USERS.map((u) => (
+                    {Object.keys(USER_CONFIG).map((u) => (
                         <button 
                             key={u}
                             onClick={() => { setUser(u); setShowProfileMenu(false); }}
-                            className={`w-full text-left px-3 py-2 rounded-xl flex items-center gap-2 transition-colors ${user === u ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-slate-50 text-slate-700'}`}
+                            className={`w-full text-left px-3 py-3 rounded-xl flex items-center gap-3 transition-colors ${user === u ? 'bg-blue-50 text-blue-900 font-bold' : 'hover:bg-slate-50 text-slate-600'}`}
                         >
-                            <User size={16} /> {u}
-                            {user === u && <CheckCircle2 size={14} className="ml-auto" />}
+                            <img src={USER_CONFIG[u].avatar} className="w-6 h-6 rounded-full" alt="" />
+                            <span>{u}</span>
+                            {user === u && <CheckCircle2 size={16} className="ml-auto text-blue-500" />}
                         </button>
                     ))}
                 </div>
@@ -592,6 +639,7 @@ const App = () => {
             loadingAdvice={loadingAdvice}
             history={history}
             currentDayIndex={currentDayIndex}
+            themeColor={currentUserConfig.theme}
         />}
         {activeTab === 'nutrition' && <NutritionView 
             todaysNutrition={todaysNutrition}
