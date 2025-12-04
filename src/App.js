@@ -258,7 +258,9 @@ const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, cu
           const isDone = todayLog[ex.name]?.done;
           const isInfoOpen = infoOpen === idx;
           const lastStats = getLastSessionStats(ex.name);
-          
+          // Utilisation directe de l'image
+          const gifUrl = ex.img;
+
           return (
             <GlassCard key={idx} className={`transition-all duration-300 ${isDone ? 'bg-green-50/50 border-green-200/50 ring-1 ring-green-400/30' : ''}`}>
               <div className="flex justify-between items-start mb-2">
@@ -281,10 +283,11 @@ const WorkoutView = ({ todaysWorkout, todayLog, handleLogChange, saveWorkout, cu
                 <button onClick={() => handleLogChange(ex.name, 'done', !isDone)} className={`p-2 rounded-full transition-colors ${isDone ? 'bg-green-500 text-white shadow-lg shadow-green-500/30' : 'bg-white/50 text-slate-500 hover:bg-white'}`}><CheckCircle2 size={22} /></button>
               </div>
               
+              {/* ZONE GIF */}
               {isInfoOpen && (
                   <div className="mb-4 mt-2 bg-white/60 rounded-xl p-3 border border-white/50 shadow-inner animate-in fade-in slide-in-from-top-2">
                       <div className="aspect-video bg-slate-900 rounded-lg mb-3 overflow-hidden shadow-sm relative">
-                          <img src={ex.img || IMAGES.defaultGif} alt={ex.name} className="w-full h-full object-cover" />
+                          <img src={gifUrl} alt={ex.name} className="w-full h-full object-cover" />
                       </div>
                       <p className="text-sm text-slate-700 font-medium leading-relaxed">{ex.desc}</p>
                   </div>
@@ -498,14 +501,7 @@ const App = () => {
     } else {
       setHistory([]); 
     }
-    const quotes = [
-        "Alors Battosai, on s'y met ?",
-        "Prêt à transpirer Sensei ?",
-        "Pas de pitié aujourd'hui !"
-    ];
-    setMascotQuote(quotes[Math.floor(Math.random() * quotes.length)]);
-    setShowMascotQuote(true);
-    setTimeout(() => setShowMascotQuote(false), 5000);
+    triggerMascotQuote();
   }, [user]);
 
   // 2. Gestion du brouillon
